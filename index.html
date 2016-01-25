@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+	<meta name="format-detection" content="telephone=no">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<title>旋转-转盘-抽奖</title>
+	
+	<style type="text/css">
+	*{margin:0;padding:0;}
+	#page{ overflow:hidden; width:100%;}
+	#rotate{position: relative; margin: 0 auto; width:640px; height:640px; }
+	#plate{position:absolute; left:0; top:0;width:640px; height:640px; background:url(images/lottery-plate.png) center no-repeat;background-size: 100% 100%;}
+	#arrow{position:absolute; left:50%; top:205px; z-index: 10;width:150px;margin-left: -75px;height:190px; background:url(images/lottery-arrow.png) center no-repeat; }
+	</style>
+
+</head>
+<body>
+
+<div id="page">
+<section id="box">
+	<div id="rotate"><div id="plate"></div><div id="arrow"></div></div>
+</section>
+</div>
+
+<!-- 加载 aTips start -->
+<link rel="stylesheet" type="text/css" href="js/Tips/mTips.css" />
+<script type="text/javascript" src="js/Tips/mTips.min.js"></script>
+<!-- 加载 aTips end -->
+<script type="text/javascript" src="js/zepto.min.js"></script>
+<script type="text/javascript" src="js/utils.js"></script>
+<script type="text/javascript" src="mRotate.js"></script>
+
+<script type="text/javascript">
+
+//缩放
+scalePage('#box');
+
+// 奖品数据	
+// var prizeData = [
+// 	{
+// 		id: 1,
+// 		prize: "一等奖",
+// 		angle: 3600
+// 	}, {
+// 		id: 2,
+// 		prize: "二等奖",
+// 		angle: 3720
+// 	}, {
+// 		id: 3,
+// 		prize: "三等奖",
+// 		angle: 3840
+// 	}, {
+// 		id: 4,
+// 		prize: "再接再厉",
+// 		angle: 3750
+// 	}, {
+// 		id: 5,
+// 		prize: "要加油哦",
+// 		angle: 3865
+// 	}, {
+// 		id: 6,
+// 		prize: "谢谢参与",
+// 		angle: 3930
+// 	}
+// ];
+
+//旋转
+var arrow = document.getElementById('arrow'), 
+	plate = document.getElementById('plate'),
+	isRotate = false;
+
+arrow.onclick = function() {
+	if (isRotate) return;
+	isRotate = true;
+
+	$.ajax({
+		url: 'rotate.php',
+		dataType: 'json',
+		error: function() {
+			isRotate = false;
+			Tips.alert('网络错误，请重试！');
+		},
+		success: function(data) {
+			// console.time('计时');
+			new Rotate({
+				el: plate,
+				//angle: 90,
+				animateTo: data.angle,
+				duration: 5000,
+				end: function() {
+					// console.timeEnd('计时');
+					isRotate = false;
+					Tips.alert(data.prize);
+				}
+			});
+		}
+	});
+};
+
+
+// touchClick(arrow,function(){
+// 	if(isRotate) return;
+// 	isRotate = true;
+// 	$.ajax({
+// 		url: 'rotate.php',
+// 		dataType: 'json',
+// 		error: function(){
+// 			isRotate = false;
+// 			alert('网络错误，请重试！');	
+// 		},
+// 		success: function(data){
+// 			new Rotate({
+// 				el: plate,
+// 				angle: 90,
+// 				animateTo: data.angle,
+// 				duration: 5000,
+// 				end: function(){
+// 					isRotate = false;
+// 					alert(data.prize);
+// 				}	
+// 			});
+// 		}
+// 	});
+// });
+</script>
+
+</body>
+</html>
